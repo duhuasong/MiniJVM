@@ -5,11 +5,11 @@ import java.io.File;
 import com.utils.StringUtil;
 
 public class Classpath {
-	private Entry bootClasspath;
-	private Entry extClasspath;
-	private Entry userClasspath;
+	private static Entry bootClasspath;
+	private static Entry extClasspath;
+	private static Entry userClasspath;
 	
-	public Classpath parse(String jreOption,String cpOption){
+	public static Classpath parse(String jreOption,String cpOption){
 		Classpath cp = new Classpath();
 		cp.parseBootAndExtClasspath(jreOption);
 		cp.parseUserClasspath(cpOption);
@@ -19,14 +19,14 @@ public class Classpath {
 	private void parseBootAndExtClasspath(String jreOption){
 		String jreDir = getJreDir(jreOption);
 		String jreLibPath = jreDir+File.separator+"lib"+File.separator+"*";//jre/lib/*
-		this.bootClasspath = Entry.newEntry(jreLibPath);
+		bootClasspath = Entry.newEntry(jreLibPath);
 		String jreExtPath = jreDir+File.separator+"lib"+File.separator+"ext"+File.separator+"*";//jre/lib/ext/*
-		this.extClasspath = Entry.newEntry(jreExtPath);
+		extClasspath = Entry.newEntry(jreExtPath);
 	}
 	private void parseUserClasspath(String cpOption){
 		if(StringUtil.isEmpty(cpOption))
 			cpOption = ".";
-		this.userClasspath = Entry.newEntry(cpOption);
+		userClasspath = Entry.newEntry(cpOption);
 	}
 	private String getJreDir(String cpOption){
 		if(!StringUtil.isEmpty(cpOption)&&new File(cpOption).exists())
@@ -42,33 +42,15 @@ public class Classpath {
 	public byte[] readClass(String className) throws ClassNotFoundException{
 		className = className+".class";
 		byte[] bytes = null;
-		bytes = this.bootClasspath.readClass(className);
-		bytes = bytes!=null ?bytes : this.extClasspath.readClass(className);
-		bytes = bytes!=null ?bytes : this.userClasspath.readClass(className);
+		bytes = bootClasspath.readClass(className);
+		bytes = bytes!=null ?bytes : extClasspath.readClass(className);
+		bytes = bytes!=null ?bytes : userClasspath.readClass(className);
 		if(bytes!=null) return bytes;
-		throw new ClassNotFoundException("未在路径"+this.bootClasspath.toString()+","
-		+this.extClasspath.toString()+","+this.userClasspath.toString()+"中找到"+className);
-	}
-	public Entry getBootClasspath() {
-		return bootClasspath;
-	}
-	public void setBootClasspath(Entry bootClasspath) {
-		this.bootClasspath = bootClasspath;
-	}
-	public Entry getExtClasspath() {
-		return extClasspath;
-	}
-	public void setExtClasspath(Entry extClasspath) {
-		this.extClasspath = extClasspath;
-	}
-	public Entry getUserClasspath() {
-		return userClasspath;
-	}
-	public void setUserClasspath(Entry userClasspath) {
-		this.userClasspath = userClasspath;
+		throw new ClassNotFoundException("未在路径"+bootClasspath.toString()+","
+		+extClasspath.toString()+","+userClasspath.toString()+"中找到"+className);
 	}
 	@Override
 	public String toString() {
-		return this.userClasspath.toString();
+		return userClasspath.toString();
 	}
 }

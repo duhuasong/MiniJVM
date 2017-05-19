@@ -2,6 +2,7 @@ package com;
 
 import java.util.Arrays;
 
+import com.classpath.Classpath;
 import com.utils.StringUtil;
 
 
@@ -53,5 +54,15 @@ public class Main {
 	//启动MiniJvm
 	private static void startMiniJvm(Cmd cmd){
 		System.out.println("classpath:"+cmd.getCpOption()+" class:"+cmd.getClassName()+" args:"+Arrays.toString(cmd.getArgs()));
+		Classpath cp = Classpath.parse(cmd.getXjreOption(), cmd.getCpOption());
+		String className = cmd.getClassName().replace(".", "/");
+		byte[] classData = null;
+		try {
+			classData = cp.readClass(className);
+		} catch (ClassNotFoundException e) {
+			System.out.println(e.getMessage());
+			System.exit(0);
+		}
+		System.out.println(Arrays.toString(classData));
 	}
 }

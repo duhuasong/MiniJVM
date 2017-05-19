@@ -22,7 +22,6 @@ public class ZipEntry extends Entry {
 			jarIn = new ZipInputStream(new FileInputStream(absPath));
 			java.util.zip.ZipEntry entry = null;
 			while((entry = jarIn.getNextEntry())!=null){
-				System.out.println(entry.getName());
 				if(absPath.equals(entry.getName())){
 					return IOUtil.toByteArray(jarFile.getInputStream(entry));
 				}
