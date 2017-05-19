@@ -20,18 +20,20 @@ public class Main {
 	//解析命令行参数
 	private static Cmd parseCmd(String[] args){
 		Cmd cmd = new Cmd();
-		boolean flag = false;//标识当前参数应该是命令还是参数值，false表示命令
 		for(int i=0;i<args.length;i++){
 			String arg = args[i];
-			if(!flag && Cmd.HELP.contains(arg)){
+			String nextArg = "";
+			if(i+1<args.length) nextArg = args[i+1];
+			if(Cmd.HELP.contains(arg)){
 				cmd.setHelpFlag(true);
-			}else if(!flag && Cmd.VERSION.contains(arg)){
+			}else if(Cmd.VERSION.contains(arg)){
 				cmd.setVersionFlag(true);
-			}else if(!flag && Cmd.CLASSPATH.contains(arg)){
-				flag = true;
-			}else if(flag){
-				cmd.setCpOption(arg);
-				flag = false;
+			}else if(Cmd.CLASSPATH.contains(arg)){
+				cmd.setCpOption(nextArg);
+				i++;
+			}else if(Cmd.X_JRE.contains(arg)){
+				cmd.setXjreOption(nextArg);
+				i++;
 			}else{
 				cmd.setClassName(arg);
 				cmd.setArgs(Arrays.copyOfRange(args, i+1, args.length));
@@ -42,7 +44,11 @@ public class Main {
 	}
 	//打印提示信息
 	private static void printUsage(){
-		System.out.println("Usage: minijvm.exe [-options] class [args...]\n");
+		System.out.println("Usage: minijvm.exe [-options] class [args...]");
+		System.out.println("  "+Cmd.HELP.toString()+":print help message");
+		System.out.println("  "+Cmd.VERSION.toString()+":print version");
+		System.out.println("  "+Cmd.CLASSPATH.toString()+":classpath");
+		System.out.println("  "+Cmd.X_JRE.toString()+":path to jre");
 	}
 	//启动MiniJvm
 	private static void startMiniJvm(Cmd cmd){
