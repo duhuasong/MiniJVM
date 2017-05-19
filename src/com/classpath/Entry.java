@@ -10,7 +10,7 @@ public abstract class Entry {
 	 * @return
 	 * @throws ClassNotFoundException
 	 */
-	abstract byte[] readClass(String className) throws ClassNotFoundException ;
+	abstract byte[] readClass(String className);
 	/**
 	 * 创建文件实例
 	 * @param path
@@ -18,7 +18,7 @@ public abstract class Entry {
 	 */
 	public static Entry newEntry(String path){
 		if(path.contains(pathSeparator)) return new CompositeEntry(path);
-		if(path.contains("*")) return new WildcardEntry(path);
+		if(path.endsWith("*")) return new WildcardEntry(path);
 		if(path.toLowerCase().endsWith(".zip")||path.toLowerCase().endsWith(".jar")) return new ZipEntry(path);
 		return new DirEntry(path);
 	}

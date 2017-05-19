@@ -9,16 +9,14 @@ public class CompositeEntry extends Entry {
 		parsePathList(pathList);
 	}
 	@Override
-	byte[] readClass(String className) throws ClassNotFoundException {
+	byte[] readClass(String className){
 		byte[] bytes = null;
 		for(Entry entry:entrys){
-			try {
-				if((bytes = entry.readClass(className))!=null){
-					return bytes;
-				}
-			} catch (ClassNotFoundException e) {}
+			if((bytes = entry.readClass(className))!=null){
+				return bytes;
+			}
 		}
-		throw new ClassNotFoundException("在路径"+toString()+"中未找到"+className);
+		return null;
 	}
 	public List<Entry> getEntrys() {
 		return entrys;

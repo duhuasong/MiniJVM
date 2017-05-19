@@ -14,7 +14,7 @@ public class ZipEntry extends Entry {
 		this.absPath = new File(path).getAbsolutePath();
 	}
 	@Override
-	byte[] readClass(String className) throws ClassNotFoundException {
+	byte[] readClass(String className){
 		ZipFile jarFile = null;
 		ZipInputStream jarIn = null;
 		try {
@@ -28,14 +28,14 @@ public class ZipEntry extends Entry {
 				}
 			}
 		}catch(IOException e){
-			throw new ClassNotFoundException("在压缩包"+absPath+"中未找到"+className,e);
+			return null;
 		}finally {
 			try {
 				jarIn.close();
 				jarFile.close();
 			} catch (IOException e2) {}
 		}
-		throw new ClassNotFoundException("在压缩包"+absPath+"中未找到"+className);
+		return null;
 	}
 	public String getAbsPath() {
 		return absPath;

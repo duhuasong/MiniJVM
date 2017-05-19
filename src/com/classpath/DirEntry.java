@@ -12,12 +12,13 @@ public class DirEntry extends Entry {
 		this.absDir = new File(path).getAbsolutePath();
 	}
 	@Override
-	byte[] readClass(String className) throws ClassNotFoundException {
+	byte[] readClass(String className){
 		byte[] bytes = null;
 		try {
 			bytes = IOUtil.toByteArray(new FileInputStream(new File(absDir,className)));
 		} catch (IOException e) {
-			throw new ClassNotFoundException("在目录"+absDir+"中未找到"+className,e);
+//			throw new ClassNotFoundException("在目录"+absDir+"中未找到"+className,e);
+			return null;
 		}
 		return bytes;
 	}
