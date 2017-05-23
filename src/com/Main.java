@@ -1,7 +1,10 @@
 package com;
 
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
+import com.classfile.ClassFile;
+import com.classfile.MemberInfo;
 import com.classpath.Classpath;
 import com.utils.StringUtil;
 
@@ -56,6 +59,29 @@ public class Main {
 		System.out.println("classpath:"+cmd.getCpOption()+" class:"+cmd.getClassName()+" args:"+Arrays.toString(cmd.getArgs()));
 		Classpath cp = Classpath.parse(cmd.getXjreOption(), cmd.getCpOption());
 		String className = cmd.getClassName().replace(".", "/");
+		ClassFile cf = loadClass(className,cp);
+		printClassInfo(cf);
+//		System.out.println(Arrays.toString(classData));
+	}
+
+	private static void printClassInfo(ClassFile cf) {
+		System.out.println("version:"+cf.getMajorVersion()+"."+cf.getMinorVersion());
+		System.out.println("constants count:"+cf.getConstantPool().getCp().length);
+		System.out.println("access flags:"+Modifier.toString(cf.getAccessFlag()));
+		System.out.println("this class:"+cf.getClassName());
+		System.out.println("super class:"+cf.getSuperClassName());
+		System.out.println("interfaces:"+Arrays.toString(cf.getInterfaceNames()));
+		System.out.println("fields count:"+cf.getFields().length);
+		for(MemberInfo field:cf.getFields()){
+			System.out.println(field.getDescription()+" "+field.getName());
+		}
+		System.out.println("methods count:"+cf.getMethods().length);
+		for(MemberInfo method:cf.getMethods()){
+			System.out.println(method.getDescription()+" "+method.getName());
+		}
+	}
+
+	private static ClassFile loadClass(String className, Classpath cp) {
 		byte[] classData = null;
 		try {
 			classData = cp.readClass(className);
@@ -63,6 +89,6 @@ public class Main {
 			System.out.println(e.getMessage());
 			System.exit(0);
 		}
-		System.out.println(Arrays.toString(classData));
+		return ClassFile.parse(classData);
 	}
 }

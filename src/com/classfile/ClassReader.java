@@ -10,10 +10,12 @@ public class ClassReader {
 	private int count;
 	public ClassReader(byte[] bytes){
 		this.bytes = bytes;
+		this.count = bytes.length;
+		this.pos = 0;
 	}
 	public byte readUnit8(){
 		checkSize(1);
-		return bytes[++pos];
+		return bytes[pos++];
 	}
 	public short readUnit16(){
 		checkSize(2);
@@ -35,12 +37,10 @@ public class ClassReader {
 	}
 	public short[] readUnit16s(){
 		checkSize(2);
-		int count = readUnit16()&0xff;//转成无符号数值
-		pos = pos + 2;
-		int length = count<<1;
-		checkSize(length);
-		short[] rShorts = new short[length];
-		for(int i=0;i<length;i++){
+		int count = readUnit16()&0xffff;//转成无符号数值
+		checkSize(count<<1);
+		short[] rShorts = new short[count];
+		for(int i=0;i<count;i++){
 			rShorts[i] = BytesUtil.bytesToShort(bytes, pos);
 			pos = pos + 2;
 		}

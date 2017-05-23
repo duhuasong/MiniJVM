@@ -5,8 +5,8 @@ public class BytesUtil {
 	    * byte数组中取short数值，本方法适用于(低位在后，高位在前)的顺序。 
 	    */  
 	public static short bytesToShort(byte[] bytes, int offset) {  
-	    return (short)(((bytes[offset+2] & 0xFF)<<8)  
-	            |(bytes[offset+3] & 0xFF));  
+	    return (short)(((bytes[offset] & 0xFF)<<8)  
+	            |(bytes[offset+1] & 0xFF));  
 	}
 	/**  
 	 * byte数组中取int数值，本方法适用于(低位在后，高位在前)的顺序。 

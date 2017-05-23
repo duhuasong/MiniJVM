@@ -26,7 +26,26 @@ public abstract class ConstantInfo {
 		return ci;
 	}
 	private static ConstantInfo newConstantInfo(byte tag,ConstantPool cp){
-		return null;
+		switch (tag) {
+		case CONSTANT_Integer: return new ConstantIntegerInfo();
+		case CONSTANT_Float: return new ConstantFloatInfo();
+		case CONSTANT_Long: return new ConstantLongInfo();
+		case CONSTANT_Double: return new ConstantDoubleInfo();
+		case CONSTANT_Utf8: return new ConstantUtf8Info();
+		case CONSTANT_String: return new ConstantStringInfo(cp);
+		case CONSTANT_Class: return new ConstantClassInfo(cp);
+		case CONSTANT_Fieldref:
+		return new ConstantFieldrefInfo(cp);
+		case CONSTANT_Methodref:
+		return new ConstantMethodrefInfo(cp);
+		case CONSTANT_InterfaceMethodref:
+		return new ConstantInterfaceMethodrefInfo(cp);
+		case CONSTANT_NameAndType: return new ConstantNameAndTypeInfo();
+//		case CONSTANT_MethodType: return new ConstantMethodTypeInfo();
+//		case CONSTANT_MethodHandle: return new ConstantMethodHandleInfo();
+//		case CONSTANT_InvokeDynamic: return new ConstantInvokeDynamicInfo();
+		default: throw new ClassFormatError("constant pool tag!");
+		}
 	}
 }
 
@@ -62,7 +81,7 @@ class ConstantUtf8Info extends ConstantInfo{
 	private String val;
 	@Override
 	public void readInfo(ClassReader cr) {
-		int length = cr.readUnit16()&0xff;
+		int length = cr.readUnit16()&0xffff;
 		byte[] bytes = cr.readBytes(length);
 		try {
 			this.val = new String(bytes,"utf8");
@@ -70,10 +89,17 @@ class ConstantUtf8Info extends ConstantInfo{
 			e.printStackTrace();
 		}
 	}
+	@Override
+	public String toString() {
+		return this.val;
+	}
 }
 class ConstantStringInfo extends ConstantInfo{
 	private ConstantPool cp;
 	private short stringIndex;
+	public ConstantStringInfo(ConstantPool cp){
+		this.cp = cp;
+	}
 	@Override
 	public void readInfo(ClassReader cr) {
 		this.stringIndex = cr.readUnit16();
@@ -85,6 +111,9 @@ class ConstantStringInfo extends ConstantInfo{
 class ConstantClassInfo extends ConstantInfo{
 	private ConstantPool cp;
 	protected short nameIndex;
+	public ConstantClassInfo(ConstantPool cp){
+		this.cp = cp;
+	}
 	@Override
 	public void readInfo(ClassReader cr) {
 		this.nameIndex = cr.readUnit16();
@@ -106,6 +135,9 @@ class ConstantMemberrefInfo extends ConstantInfo{
 	private ConstantPool cp;
 	protected short classIndex;
 	protected short nameAndTypeIndex;
+	public ConstantMemberrefInfo(ConstantPool cp){
+		this.cp = cp;
+	}
 	@Override
 	public void readInfo(ClassReader cr) {
 		this.classIndex = cr.readUnit16();
@@ -118,6 +150,18 @@ class ConstantMemberrefInfo extends ConstantInfo{
 		return this.cp.getUtf8(nameAndTypeIndex);
 	}
 }
-class ConstantFieldrefInfo extends ConstantMemberrefInfo{}
-class ConstantMethodrefInfo extends ConstantMemberrefInfo{}
-class ConstantInterfaceMethodrefInfo extends ConstantMemberrefInfo{}
+class ConstantFieldrefInfo extends ConstantMemberrefInfo{
+	public ConstantFieldrefInfo(ConstantPool cp){
+		super(cp);
+	}
+}
+class ConstantMethodrefInfo extends ConstantMemberrefInfo{
+	public ConstantMethodrefInfo(ConstantPool cp){
+		super(cp);
+	}
+}
+class ConstantInterfaceMethodrefInfo extends ConstantMemberrefInfo{
+	public ConstantInterfaceMethodrefInfo(ConstantPool cp){
+		super(cp);
+	}
+}

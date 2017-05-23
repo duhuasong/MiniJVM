@@ -13,7 +13,7 @@ public class ClassFile {
 	private MemberInfo[] methods;
 	private AttributeInfo[] attributes;
 	
-	public ClassFile parse(byte[] classData){
+	public static ClassFile parse(byte[] classData){
 		ClassReader cr = new ClassReader(classData);
 		ClassFile cf = new ClassFile();
 		cf.read(cr);
@@ -22,14 +22,14 @@ public class ClassFile {
 	private void read(ClassReader cr){
 		readAndCheckMagic(cr);
 		readAndCheckVersion(cr);
-		this.constantPool = readConstantPool(cr);
+		this.constantPool = new ConstantPool().readConstantPool(cr);
 		this.accessFlags = cr.readUnit16();
 		this.thisClass = cr.readUnit16();
 		this.superClass = cr.readUnit16();
 		this.interfaces = cr.readUnit16s();
 		this.fields = readMembers(cr);
 		this.methods = readMembers(cr);
-		this.attributes = readAttributes(cr);
+		this.attributes = AttributeInfo.readAttributes(cr,constantPool);
 	}
 	protected void readAndCheckMagic(ClassReader cr){
 		if((this.magic=cr.readUnit32())!=0xcafebabe)
@@ -49,11 +49,8 @@ public class ClassFile {
 			default:throw new UnsupportedClassVersionError(majorVersion+"."+minorVersion);
 		}
 	}
-	protected ConstantPool readConstantPool(ClassReader cr){
-		return null;
-	}
 	private MemberInfo[] readMembers(ClassReader cr){
-		int count = cr.readUnit16()&0xff;//转成无符号数值
+		int count = cr.readUnit16()&0xffff;//转成无符号数值
 		MemberInfo[] members = new MemberInfo[count];
 		for(int i=0;i<count;i++){
 			members[i] = readMember(cr);
@@ -66,11 +63,8 @@ public class ClassFile {
 		member.setAccessFlags(cr.readUnit16());
 		member.setNameIndex(cr.readUnit16());
 		member.setDescriptionIndex(cr.readUnit16());
-		member.setAttributes(readAttributes(cr));
+		member.setAttributes(AttributeInfo.readAttributes(cr,constantPool));
 		return member;
-	}
-	protected AttributeInfo[] readAttributes(ClassReader cr){
-		return null;
 	}
 	public short getMinorVersion() {
 		return minorVersion;
