@@ -24,6 +24,9 @@ public class MemberInfo {
 	public String getName() {
 		return this.cp.getUtf8(this.nameIndex);
 	}
+	public short getAccessFlags() {
+		return accessFlags;
+	}
 	public String getDescription() {
 		return this.cp.getUtf8(this.descriptionIndex);
 	}

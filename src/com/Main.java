@@ -2,10 +2,12 @@ package com;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Map;
 
 import com.classfile.ClassFile;
 import com.classfile.MemberInfo;
 import com.classpath.Classpath;
+import com.utils.Primitive;
 import com.utils.StringUtil;
 
 
@@ -73,11 +75,13 @@ public class Main {
 		System.out.println("interfaces:"+Arrays.toString(cf.getInterfaceNames()));
 		System.out.println("fields count:"+cf.getFields().length);
 		for(MemberInfo field:cf.getFields()){
-			System.out.println(field.getDescription()+" "+field.getName());
+			System.out.println(Modifier.toString(field.getAccessFlags())+" "+Primitive.getRealType(field.getDescription())+" "+field.getName());
 		}
 		System.out.println("methods count:"+cf.getMethods().length);
 		for(MemberInfo method:cf.getMethods()){
-			System.out.println(method.getDescription()+" "+method.getName());
+			Map<String,String> desc = Primitive.getRealMethodDescription(method.getDescription());
+			System.out.println((method.getAccessFlags()!=0?Modifier.toString(method.getAccessFlags())+" ":"")+desc.get("out")+" "+method.getName()+"("+desc.get("in")+")");
+//			System.out.println(method.getDescription()+" "+method.getName());
 		}
 	}
 
